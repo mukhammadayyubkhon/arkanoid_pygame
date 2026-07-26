@@ -37,7 +37,18 @@ MAX_BALL_SPEED_X = 8
 
 # --- Bonuses ---------------------------------------------------------------------
 BONUS_PROBABILITY = 0.3  # Chance that destroyed brick will drop a bonus
-BONUS_TYPES = ["extend", "multiball", "laser", "extra_life"]
+
+# Bonus Types: 'S' - Paddle Shrink, 'U' - Ball Speed Up, 'D' - Ball Speed Down
+BONUS_TYPES = {
+    'S': {'name': 'Paddle Shrink', 'color': (255, 165, 0), 'icon': 'S'},    # Orange
+    'U': {'name': 'Ball Speed Up', 'color': (0, 255, 255), 'icon': 'U'},    # Cyan
+    'D': {'name': 'Ball Speed Down', 'color': (255, 0, 255), 'icon': 'D'},  # Magenta
+}
+
+BONUS_WIDTH = 30
+BONUS_HEIGHT = 15
+BONUS_SPEED = 3
+BONUS_LIFETIME = 600  # frames before bonus disappears
 
 # --- Visual Effects -----------------------------------------------------------
 TRAIL_LENGTH = 6  # Ball's Motion Trail Length
