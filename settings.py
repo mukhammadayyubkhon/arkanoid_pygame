@@ -37,7 +37,7 @@ MAX_BALL_SPEED_X = 8
 
 # --- Bonuses ---------------------------------------------------------------------
 BONUS_PROBABILITY = 0.3  # Chance that destroyed brick will drop a bonus
-BONUS_TYPES = ["extend", "multiball", "laser", "extra_life"]
+BONUS_TYPES = ["extend", "multiball", "laser", "extra_life", "shrink", "speed_up", "speed_down"]
 
 # --- Visual Effects -----------------------------------------------------------
 TRAIL_LENGTH = 6  # Ball's Motion Trail Length
