@@ -1,6 +1,6 @@
 import pygame
-
 import settings as cfg
+import random
 
 class Paddle:
     """ Our main player, Paddle, moves only horizontally. """
@@ -32,6 +32,10 @@ class Paddle:
     def draw(self, screen: pygame.Surface) -> None:
         """ Renders the Paddle on the screen. """
         pygame.draw.rect(screen, cfg.PADDLE_COLOR, self.rect, border_radius=5)
+    
+    def shrink(self):
+        """Уменьшает ширину платформы"""
+        self.rect.width = max(40, self.rect.width * 0.7)
 
 
 class Brick:
@@ -67,6 +71,7 @@ class Brick:
                 return
         return
 
+
 class Ball:
     """ Ball Actor class. """
 
@@ -90,3 +95,85 @@ class Ball:
         """ Renders the Ball. """
         colour = cfg.BALL_COLOR
         pygame.draw.circle(screen, colour, self.rect.center, self.radius)
+    
+    def speed_up(self):
+        """Увеличиваетб скорость мяча"""
+        current_speed = (self.vx ** 2 + self.vy ** 2) ** 0.5
+        new_speed = current_speed * 1.3
+        if current_speed > 0:
+            ratio = new_speed / current_speed
+            self.vx *= ratio
+            self.vy *= ratio
+
+    def speed_down(self):
+        """Уменьшаетб скорость мяча"""
+        current_speed = (self.vx ** 2 + self.vy ** 2) ** 0.5
+        new_speed = max(2, current_speed * 0.7)
+        if current_speed > 0:
+            ratio = new_speed / current_speed
+            self.vx *= ratio
+            self.vy *= ratio
+
+
+class Bonus:
+    """Bonus class that can be caught by paddle."""
+
+    def __init__(self, x: int, y: int, bonus_type: str):
+        self.x = x
+        self.y = y
+        self.rect = pygame.Rect(x, y, 20, 20)
+        self.type = bonus_type
+        self.speed = 3
+        self.alive = True
+        
+        self.bonus_data = {
+            "extend": {"letter": "E", "color": cfg.GREEN, "name": "Extend"},
+            "multiball": {"letter": "M", "color": cfg.MAGENTA, "name": "Multi Ball"},
+            "laser": {"letter": "L", "color": cfg.RED, "name": "Laser"},
+            "extra_life": {"letter": "+", "color": cfg.YELLOW, "name": "Extra Life"},
+            "shrink": {"letter": "S", "color": cfg.ORANGE, "name": "Shrink"},
+            "speed_up": {"letter": "U", "color": cfg.CYAN, "name": "Speed Up"},
+            "speed_down": {"letter": "D", "color": (100, 100, 255), "name": "Speed Down"},
+        }
+
+    def update(self) -> None:
+        """Moves bonus down."""
+        self.y += self.speed
+        self.rect.y = self.y
+
+    def draw(self, screen: pygame.Surface) -> None:
+        """Draws bonus on screen."""
+        data = self.bonus_data.get(self.type, {"letter": "?", "color": cfg.WHITE})
+        color = data["color"]
+        letter = data["letter"]
+        
+        pygame.draw.rect(screen, color, self.rect)
+        pygame.draw.rect(screen, cfg.WHITE, self.rect, 2)
+        
+        font = pygame.font.Font(None, 24)
+        text = font.render(letter, True, cfg.BLACK)
+        text_rect = text.get_rect(center=self.rect.center)
+        screen.blit(text, text_rect)
+
+    def apply(self, paddle: Paddle, ball: Ball) -> str:
+        """Applies bonus effect"""
+        if self.type == "extend":
+            paddle.rect.width = min(200, paddle.rect.width * 1.3)
+            return "Paddle Extended!"
+        elif self.type == "multiball":
+            return "Multi Ball!"
+        elif self.type == "laser":
+            paddle.laser = True
+            return "Laser Activated!"
+        elif self.type == "extra_life":
+            return "Extra Life!"
+        elif self.type == "shrink":
+            paddle.shrink()
+            return "Paddle Shrunk!"
+        elif self.type == "speed_up":
+            ball.speed_up()
+            return "Speed Up!"
+        elif self.type == "speed_down":
+            ball.speed_down()
+            return "Speed Down!"
+        return "Bonus applied!"
